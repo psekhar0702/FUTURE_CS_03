@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - SecureShare</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">SecureShare</a>
+    <div class="ms-auto">
+      <a href="/logout" class="btn btn-outline-light">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <h3 class="mb-3">Upload a File</h3>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form action="/upload" method="POST" enctype="multipart/form-data" class="mb-4">
+    <div class="input-group">
+      <input type="file" name="file" class="form-control" required>
+      <button type="submit" class="btn btn-success">Upload & Encrypt</button>
+    </div>
+  </form>
+
+  <h4>Encrypted Files</h4>
+  <table class="table table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Filename</th>
+        <th>Download</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for file in files %}
+        <tr>
+          <td>{{ file }}</td>
+          <td>
+            <a href="{{ url_for('download', filename=file) }}" class="btn btn-sm btn-primary">Download</a>
+          </td>
+          <td>
+            <form action="{{ url_for('delete', filename=file) }}" method="POST" onsubmit="return confirmDelete();">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function confirmDelete() {
+    return confirm("Do you really want to delete this file?");
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
